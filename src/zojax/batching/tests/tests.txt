@@ -1,0 +1,172 @@
+===========
+UI Batching 
+===========
+
+    >>> from zope import component, interface, event
+    >>> from zope.app.testing.functional import getRootFolder
+    >>> from zope.publisher.browser import TestRequest
+    >>> from zojax.batching.batch import Batch
+    >>> from zojax.batching.session import SessionBatch
+    >>> from zojax.batching.interfaces import IBatch, IBatchView
+
+    >>> seq = list(range(23))
+
+    >>> request = TestRequest(form={'bstart': 0})
+    >>> batch = Batch(seq, size=5, request=request)
+    >>> print component.getMultiAdapter(
+    ...     (batch, request), name='pagelet').publishTraverse(
+    ...         request, 'batch.view')
+    <div class="z-batch-navigation">
+      <a class="z-batch-next" href="http://127.0.0.1?bstart=5">
+        Next
+        5 &raquo;
+      </a>
+      [<span>1</span>]
+      <span><a href="http://127.0.0.1?bstart=5">2</a></span>
+      <span><a href="http://127.0.0.1?bstart=10">3</a></span>
+      <span><a href="http://127.0.0.1?bstart=15">4</a></span>
+      <span><a href="http://127.0.0.1?bstart=20">5</a></span>
+    </div>
+
+    >>> request = TestRequest(form={'bstart': 5})
+    >>> batch = Batch(seq, size=5, request=request)
+    >>> print component.getMultiAdapter(
+    ...     (batch, request), name='pagelet').publishTraverse(
+    ...         request, 'batch.view')
+    <div class="z-batch-navigation">
+      <a class="z-batch-previous"
+         href="http://127.0.0.1?bstart=0">
+        &laquo; Previous
+        5
+      </a>
+       <a class="z-batch-next" href="http://127.0.0.1?bstart=10">
+        Next
+        5 &raquo;
+      </a>
+      <span><a href="http://127.0.0.1?bstart=0">1</a></span>
+      [<span>2</span>]
+      <span><a href="http://127.0.0.1?bstart=10">3</a></span>
+      <span><a href="http://127.0.0.1?bstart=15">4</a></span>
+      <span><a href="http://127.0.0.1?bstart=20">5</a></span>
+    </div>
+
+
+    >>> request = TestRequest(form={'bstart': 20})
+    >>> batch = Batch(seq, size=5, request=request)
+    >>> print component.getMultiAdapter(
+    ...     (batch, request), name='pagelet').publishTraverse(
+    ...         request, 'batch.view')
+    <div class="z-batch-navigation">
+      <a class="z-batch-previous"
+         href="http://127.0.0.1?bstart=15">
+        &laquo; Previous
+        5
+      </a>
+      <span><a href="http://127.0.0.1?bstart=0">1</a></span>
+      <span><a href="http://127.0.0.1?bstart=5">2</a></span>
+      <span><a href="http://127.0.0.1?bstart=10">3</a></span>
+      <span><a href="http://127.0.0.1?bstart=15">4</a></span>
+      [<span>5</span>]
+    </div>
+
+    >>> request = TestRequest(form={'batch.bstart': 20})
+    >>> batch = Batch(seq, size=5, request=request, prefix='batch.')
+    >>> print component.getMultiAdapter(
+    ...     (batch, request), name='pagelet').publishTraverse(
+    ...         request, 'batch.view')
+    <div class="z-batch-navigation">
+      <a class="z-batch-previous"
+         href="http://127.0.0.1?batch.bstart=15">
+        &laquo; Previous
+        5
+      </a>
+      <span><a href="http://127.0.0.1?batch.bstart=0">1</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=5">2</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=10">3</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=15">4</a></span>
+      [<span>5</span>]
+    </div>
+
+
+Session batch
+
+    >>> from zope.session.interfaces import \
+    ...    IClientIdManager, ISessionDataContainer
+    >>> from zope.session.session import PersistentSessionDataContainer
+
+    >>> class ClientIdManager(object):
+    ...     interface.implements(IClientIdManager)
+    ...     
+    ...     id = 'session1'
+    ...     
+    ...     def getClientId(self, request):
+    ...         return self.id
+
+    >>> clientId = ClientIdManager()
+    >>> session = PersistentSessionDataContainer()
+
+    >>> component.provideUtility(clientId)
+    >>> component.provideUtility(session, ISessionDataContainer)
+
+    >>> request = TestRequest(form={'batch.bstart': 20})
+    >>> batch = SessionBatch(
+    ...     seq, size=5, request=request, prefix='batch.')
+    >>> print component.getMultiAdapter(
+    ...     (batch, request), name='pagelet').publishTraverse(
+    ...         request, 'batch.view')
+    <div class="z-batch-navigation">
+      <a class="z-batch-previous"
+         href="http://127.0.0.1?batch.bstart=15">
+        &laquo; Previous
+        5
+      </a>
+      <span><a href="http://127.0.0.1?batch.bstart=0">1</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=5">2</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=10">3</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=15">4</a></span>
+      [<span>5</span>]
+    </div>
+
+    >>> request = TestRequest()
+    >>> batch = SessionBatch(
+    ...     seq, size=5, request=request, prefix='batch.')
+    >>> print component.getMultiAdapter(
+    ...     (batch, request), name='pagelet').publishTraverse(
+    ...         request, 'batch.view')
+    <div class="z-batch-navigation">
+      <a class="z-batch-previous"
+         href="http://127.0.0.1?batch.bstart=15">
+        &laquo; Previous
+        5
+      </a>
+      <span><a href="http://127.0.0.1?batch.bstart=0">1</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=5">2</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=10">3</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=15">4</a></span>
+      [<span>5</span>]
+    </div>
+
+
+    >>> request = TestRequest(form={'batch.bstart': 15})
+    >>> batch = SessionBatch(
+    ...     seq, size=5, request=request, prefix='batch.')
+    >>> print component.getMultiAdapter(
+    ...     (batch, request), name='pagelet').publishTraverse(
+    ...         request, 'batch.view')
+    <div class="z-batch-navigation">
+      <a class="z-batch-previous"
+         href="http://127.0.0.1?batch.bstart=10">
+        &laquo; Previous
+        5
+      </a>
+      <a class="z-batch-next"
+         href="http://127.0.0.1?batch.bstart=20">
+        Next
+        3 &raquo;
+      </a>
+      <span><a href="http://127.0.0.1?batch.bstart=0">1</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=5">2</a></span>
+      <span><a href="http://127.0.0.1?batch.bstart=10">3</a></span>
+      [<span>4</span>]
+      <span><a href="http://127.0.0.1?batch.bstart=20">5</a></span>
+    </div>

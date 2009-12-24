@@ -1,0 +1,70 @@
+=======
+CHANGES
+=======
+
+1.1.3 (Unreleased)
+------------------
+
+
+1.1.2 (2009-08-27)
+------------------
+
+- Added 'queryparams' attribute to batch instance, additional params for batch links
+
+
+1.1.1 (2009-07-20)
+------------------
+
+- Sized session batch bstart key
+
+
+1.1.0 (2009-07-15)
+------------------
+
+- Added SessionBatch, it store bstart in session
+
+- Copyright changed to 'Zope Foundation and Contributors'
+
+
+1.0.4 (2009-05-04)
+------------------
+
+- Do not use z3c.autoinclude
+
+
+1.0.3 (2009-03-09)
+------------------
+
+- Rename to zojax.batching
+
+
+1.0.2 (2008-12-22)
+------------------
+
+- Check start value
+
+- Use new pagelet api
+
+- correct next/previous urls
+
+
+1.0.1 (2008-11-11)
+------------------
+
+- Added 'batch.view' pagelet type for batch rendering
+
+- Added translations: ru, nl
+
+
+1.0.0 (2008-10-10)
+------------------
+
+- Added default css styles
+
+- Update i18n
+
+
+0.99.0 (2008-08-26)
+-------------------
+
+- Initial release
