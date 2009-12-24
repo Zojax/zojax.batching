@@ -1,0 +1,54 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:i18n="http://namespaces.zope.org/i18n"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zojax.batching">
+
+  <!-- batch view pagelet type -->
+  <zojax:pageletType
+     name="batch.view"
+     interface=".interfaces.IBatchView" />
+
+  <!-- Batch -->
+  <class class=".batch.Batch">
+    <require
+       permission="zope.Public"
+       interface=".interfaces.IBatch" />
+  </class>
+
+  <!-- Session Batch -->
+  <class class=".session.SessionBatch">
+    <require
+       permission="zope.Public"
+       interface=".interfaces.IBatch" />
+  </class>
+
+  <!-- Batch view -->
+  <zojax:pagelet
+     type="batch.view"
+     for=".interfaces.IBatch *"
+     class=".batch.BatchView" />
+
+  <zojax:pagelet
+     type="batch.view"
+     for=".interfaces.IBatch"
+     class=".batch.BatchView" />
+
+  <adapter
+     name="batch.view"
+     for=".interfaces.IBatch"
+     provides="zojax.layout.interfaces.IPageletContext"
+     factory=".batch.getBatchContext" />
+
+  <!-- styles -->
+  <zojax:resourceinclude
+     name="zojax-batching.css"
+     library="zojax"
+     type="stylesheet"
+     file="styles.css" filetype="zrt" />
+
+  <!-- translations -->
+  <i18n:registerTranslations directory="locales"/>
+
+</configure>

@@ -1,0 +1,70 @@
+<div class="z-batch-navigation" i18n:domain="zojax.batching"
+     tal:define="base_url view/batch_url; dummy resourcepackage:zojax">
+
+  <a class="z-batch-previous"
+     tal:condition="context/previous"
+     tal:attributes="href view/getPreviousUrl">
+    &laquo; <tal:block i18n:translate="">Previous</tal:block>
+    <tal:block tal:content="python:len(context.previous)" />
+  </a>
+
+  <a class="z-batch-next"
+     tal:condition="context/next"
+     tal:attributes="href view/getNextUrl">
+    <tal:block i18n:translate="">Next</tal:block>
+    <tal:block tal:content="python:len(context.next)"/> &raquo;
+  </a>
+
+  <tal:if define="cur context/number; total context/total"
+          condition="python:total > 11">
+
+    <tal:if condition="python:cur <= 6">
+      <tal:block tal:repeat="b python:context.batches[:9]">
+        <metal:macro use-macro="view/template/macros/batch-navigation-link"/>
+      </tal:block>
+      <span class="z-batch-separator">...</span>
+      <tal:block define="b python:context.batches[-1]">
+        <metal:macro use-macro="view/template/macros/batch-navigation-link"/>
+      </tal:block>
+    </tal:if>
+
+    <tal:if condition="python:cur < (total - 4) and (cur > 6)">
+      <tal:block define="b python:context.batches[0]">
+        <metal:macro use-macro="view/template/macros/batch-navigation-link"/>
+      </tal:block>
+      <span class="z-batch-separator">...</span>
+      <tal:block tal:repeat="b python:context.batches[cur - 4: cur + 3]">
+        <metal:macro use-macro="view/template/macros/batch-navigation-link"/>
+      </tal:block>
+      <span class="z-batch-separator">...</span>
+      <tal:block define="b python:context.batches[-1]">
+        <metal:macro use-macro="view/template/macros/batch-navigation-link"/>
+      </tal:block>
+    </tal:if>
+
+    <tal:if condition="python:cur >= total - 4">
+      <tal:block define="b python:context.batches[0]">
+        <metal:macro use-macro="view/template/macros/batch-navigation-link"/>
+      </tal:block>
+      <span class="z-batch-separator">...</span>
+      <tal:block tal:repeat="b python:context.batches[-8:]">
+        <metal:macro use-macro="view/template/macros/batch-navigation-link"/>
+      </tal:block>
+    </tal:if>
+  </tal:if>
+
+  <tal:if condition="not:python:context.total > 11">
+    <tal:block tal:repeat="b context/batches">
+      <metal:macro use-macro="view/template/macros/batch-navigation-link"/>
+    </tal:block>
+  </tal:if>
+</div>
+
+<tal:block condition="nothing">
+  <metal:block define-macro="batch-navigation-link">
+    <tal:block tal:condition="python:context == b">
+      [<span><tal:block tal:content="b/number" /></span>]
+    </tal:block>
+    <span tal:condition="python:context != b"><a tal:attributes="href python:view.getUrl(b.start)" tal:content="b/number"></a></span>
+  </metal:block>
+</tal:block>

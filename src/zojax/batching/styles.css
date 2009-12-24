@@ -1,0 +1,33 @@
+/* zrt-cssregistry: */
+
+@media all {
+  .z-batch-navigation {
+    background-color: globalBackgroundColor;
+    border: borderWidth borderStyle globalBorderColor;
+    text-transform: lowercase;
+    text-align: center;
+    vertical-align: middle;
+    clear: both;
+    margin-bottom: 1em;
+  }
+
+  .z-batch-navigation a {
+    text-decoration: none;
+  }
+  
+  .z-batch-navigation .z-batch-next {
+    float: right;
+    padding: 0 0.5em 0 0.5em;
+  }
+
+  .z-batch-navigation .z-batch-previous {
+    float: left;
+    padding: 0 0.5em 0 0.5em;
+  }
+}
+
+@media print { 
+  .z-batch-navigation { 
+    display: none;
+  }
+}
