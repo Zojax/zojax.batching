@@ -40,6 +40,8 @@ class Batch(BaseBatch):
         if request is not None:
             try:
                 rstart = int(request.get(self.prefix+'bstart', start))
+                if rstart < 0:
+                    rstart = start
             except:
                 rstart = start
             start = rstart

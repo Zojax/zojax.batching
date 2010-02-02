@@ -1,5 +1,5 @@
 ===========
-UI Batching 
+UI Batching
 ===========
 
     >>> from zope import component, interface, event
@@ -87,6 +87,11 @@ UI Batching
       [<span>5</span>]
     </div>
 
+We batch should handle wrong start
+    >>> request = TestRequest(form={'bstart': -5})
+    >>> batch = Batch(seq, size=5, request=request)
+    >>> batch.start
+    0
 
 Session batch
 
@@ -96,9 +101,9 @@ Session batch
 
     >>> class ClientIdManager(object):
     ...     interface.implements(IClientIdManager)
-    ...     
+    ...
     ...     id = 'session1'
-    ...     
+    ...
     ...     def getClientId(self, request):
     ...         return self.id
 
