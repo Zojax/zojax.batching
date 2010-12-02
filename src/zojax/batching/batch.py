@@ -45,6 +45,14 @@ class Batch(BaseBatch):
             except:
                 rstart = start
             start = rstart
+            
+            try:
+                rsize = int(request.get(self.prefix+'bsize', size))
+                if rsize < 0:
+                    rsize = size
+            except:
+                rsize = size
+            size = rsize
 
         if start >= len(sequence):
             start = 0
