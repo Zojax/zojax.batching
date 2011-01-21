@@ -113,7 +113,7 @@ class BatchView(object):
         startKey = self.context.prefix+'bstart'
         reqs = self.request.getURL()
         parsed_query = list(urlparse.urlparse(reqs))
-        params = cgi.parse_qsl(self.request.get('QUERY_STRING','')) # not good
+        params = cgi.parse_qsl(self.request.get('QUERY_STRING',''), True) # not good
         for key, value in list(params):
             if key == startKey:
                 params.remove((key, value))
