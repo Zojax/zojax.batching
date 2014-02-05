@@ -17,8 +17,9 @@ $Id$
 """
 import os.path
 import unittest, doctest
-from zope import interface, component
 from zope.app.testing.functional import ZCMLLayer
+from zope.app.testing import functional
+from zope.app.component.hooks import setSite
 
 
 batchingLayer = ZCMLLayer(
@@ -26,10 +27,31 @@ batchingLayer = ZCMLLayer(
     __name__, 'batchingLayer', allow_teardown=True)
 
 
-def test_suite():
-    test = doctest.DocFileSuite(
-        "tests.txt",
-        optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
-    test.layer = batchingLayer
+def FunctionalDocFileSuite(*paths, **kw):
+    layer = batchingLayer
 
-    return unittest.TestSuite((test,))
+    def setUp(test):
+        functional.FunctionalTestSetup().setUp()
+
+    def tearDown(test):
+        setSite(None)
+        functional.FunctionalTestSetup().tearDown()
+
+    kw['setUp'] = setUp
+    kw['tearDown'] = tearDown
+
+    if 'optionflags' not in kw:
+        old = doctest.set_unittest_reportflags(0)
+        doctest.set_unittest_reportflags(old)
+        kw['optionflags'] = (old | doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+
+    suite = doctest.DocFileSuite(*paths, **kw)
+    suite.layer = layer
+    return suite
+
+
+def test_suite():
+    return unittest.TestSuite((
+        FunctionalDocFileSuite("tests.txt"),
+    ))
+

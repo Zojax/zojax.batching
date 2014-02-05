@@ -63,6 +63,8 @@ setup(name = 'zojax.batching',
                                   'zope.testbrowser',
                                   'zope.app.zcmlfiles',
                                   'zojax.autoinclude',
+                                  'zope.securitypolicy',
+                                  'zojax.content.browser',
                                   ]),
       include_package_data = True,
       zip_safe = False
